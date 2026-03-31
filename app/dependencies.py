@@ -9,6 +9,7 @@ from fastapi import Depends
 from sqlmodel import Session
 from app.database import get_session
 
+SessionDep = Annotated[Session, Depends(get_session)]
 
 async def get_current_user(request:Request, db:SessionDep)->User:
     credentials_exception = HTTPException(
@@ -42,4 +43,3 @@ async def is_logged_in(request: Request, db:SessionDep):
 
 IsUserLoggedIn = Annotated[bool, Depends(is_logged_in)]
 AuthDep = Annotated[User, Depends(get_current_user)]
-SessionDep = Annotated[Session, Depends(get_session)]
