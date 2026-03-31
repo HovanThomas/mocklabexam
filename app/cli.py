@@ -21,5 +21,10 @@ def initialize():
         db.commit()        
         print("Database Initialized")
 
+@cli.command()
+def test():
+    print("You're already in the test")
+
+
 if __name__ == "__main__":
     cli()

@@ -1,22 +1,26 @@
 # Flask Starter Template
-A template for simple flask projects.
+A template for simple fastapi projects.
+
+# Creating a virtual environment
+
+```
+$ python -m venv venv
+```
 
 # Installing Dependencies
 ```
-$ pip install -r requirements.txt
+$ pip install -e .
 ```
-If using replit just click the `Run` button and it will install the dependencies automatically.
+
 
 # Running the Project
-
-_Replit is configured to execute the following command to run the project:_
 ```
-$ flask run
+$ fastapi dev
 ```
 
 # Initializing the Database
 When connecting the project to a fresh empty database ensure the appropriate configuration is set then file then run the following command.
 
 ```
-$ flask init
+$ python app/cli.py initialize
 ```
