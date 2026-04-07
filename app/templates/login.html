@@ -40,24 +40,27 @@
       </div>
     </nav>
 
-    {% with messages = get_flashed_messages(request) %}
-    {% if messages %}
-    <nav class="white black-text" style="padding: 10px">
-      <div class="nav-wrapper">
-          <ul class="flashes">
+    <div class="row" style="margin-top: 10px; height:30px; width: 100vw;">
+      {% with messages = get_flashed_messages(request) %}
+        {% if messages %}
           {% for message in messages %}
-            <li>{{ message }}</li>
+            <div class="red lighten-5 col s10 offset-s1 border-red">
+              <div class="row"> 
+                  <div class="col s11 red-text" style="font-weight: bold; text-align: center">
+                    {{ message }}
+                  </div>
+                  <div class="col s1">
+                    <a href="" style="font-size:1.5em" class="red-text">&times;</a>
+                  </div>  
+              </div>
+            </div> 
           {% endfor %}
-          </ul>
-      </div>
-    </nav>
-    {% endif %}
-    {% endwith %}
+        {% endif %}
+      {% endwith %}
+    </div>
 
     <div class="row">
-
-      <section class="col s12" style="margin-top: 5px; overflow-y:scroll; height: 90vh">
-        <div class="row">
+        <div class="row" style="margin-top: 50px;">
           <!-- login form -->
           <div class="col s12 m6 l4 offset-m3 offset-l4">
             <div class="card">
@@ -66,12 +69,12 @@
 
                 <form action="/login" method="POST">
                   <div class="input-field">
-                    <input name="username" type="text" class="validate">
+                    <input name="username" id="username" type="text" class="validate" required>
                     <label for="username">Username</label>
                   </div>
 
                   <div class="input-field">
-                    <input id="password" name="password" type="password" class="validate">
+                    <input id="password" name="password" type="password" class="validate" required>
                     <label for="password">Password</label>
                   </div>
 
@@ -88,9 +91,6 @@
             </div>
           </div>
           
-        </div>
-      </section>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

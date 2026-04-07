@@ -88,60 +88,74 @@
       <div class="col s4 m3" style="display: flex; flex-direction: column;">
         <h6>Albums</h6>
         <div style="overflow-y: scroll; flex: 1;">
-          <!-- Repeatable Album Card -->
+          {% for album in albums %}
           <div class="card horizontal">
             <div class="card-stacked">
               <div class="card-content">
-                <p><strong>Album</strong></p>
-                <p>Artist</p><br>
-                <a class="btn-small waves-effect purple">View</a>
+                <p><strong>{{ album.album_name }}</strong></p>
+                <br>
+                <a href="{{ url_for('home_view') }}?album_id={{ album.id }}" class="btn-small waves-effect purple">View</a>
               </div>
             </div>
             <div class="card-image">
-              <img src="https://weblabs.web.app/api/brainrot/1.webp" alt="Album Cover">
+              <img src="{{ album.image_url or 'https://weblabs.web.app/api/brainrot/placeholder.webp' }}" alt="Album Cover">
             </div>
           </div>
-          <!-- End Repeat -->
+          {% endfor %}
         </div>
       </div>
   
       <!-- Tracks Column -->
       <div class="col s4 m5" style="display: flex; flex-direction: column;">
-        <h6>Selected Album Tracks</h6>
+        <h6>{% if selected_album %}{{ selected_album.album_name }} Tracks{% else %}Select an Album{% endif %}</h6>
         <div style="overflow-y: scroll; flex: 1;">
-          <!-- Repeatable Track Card -->
+          {% if selected_album %}
+          {% for track in selected_album.tracks %}
           <div class="card">
+            {% if track.image_url %}
+            <div class="card-image">
+              <img src="{{ track.image_url }}" alt="Track Cover" style="max-height: 150px; object-fit: cover;">
+            </div>
+            {% endif %}
             <div class="card-content">
-              <span>Track Title - x comments</span>
-              <a class="btn-small right waves-effect purple lighten-1">View Comments ></a>
+              <span>{{ track.track_name }} - {{ track.comments|length }} comments</span>
+              <a href="{{ url_for('home_view') }}?album_id={{ selected_album.id }}&track_id={{ track.id }}" class="btn-small right waves-effect purple lighten-1">View Comments ></a>
             </div>
           </div>
-          <!-- End Repeat -->
+          {% endfor %}
+          {% endif %}
         </div>
       </div>
   
       <!-- Comments Column -->
       <div class="col s4 m4" style="display: flex; flex-direction: column;">
-        <h6>Selected Track Comments</h6>
+        <h6>{% if selected_track %}Comments for {{ selected_track.track_name }}{% else %}Select a Track{% endif %}</h6>
         <!-- Comment Form -->
-        <form class="row" style="margin-bottom: 0;">
+        {% if selected_track %}
+        <form class="row" style="margin-bottom: 0;"  method="POST" action="/comments">
+          <input type="hidden" name="track_id" value="{{ selected_track.id }}">
+          <input type="hidden" name="album_id" value="{{ selected_album.id }}">
           <div class="input-field col s9">
-            <input type="text" id="comment" placeholder="Placeholder">
-            <label for="comment">Comment</label>
+            <input type="text" name="comment_text" id="comment_text" placeholder="Add a comment...">
+            <label for="comment_text">Comment</label>
           </div>
           <div class="col s3" style="display: flex; align-items: center;">
             <button class="btn waves-effect purple waves-light" type="submit">Add</button>
           </div>
         </form>
+        {% endif %}
+
         <!-- Comments List -->
         <div style="overflow-y: scroll; flex: 1;">
           <ul class="collection">
-            <!-- Repeatable Comment -->
+            {% if selected_track %}
+            {% for comment in selected_track.comments %}
             <li class="collection-item">
-              Text
-              <a href="#!" class="secondary-content"><i class="material-icons">delete</i></a>
+              {{ comment.comment }}
+              <a href="#!" class="secondary-content"><i class="material-icons red-text">delete</i></a>
             </li>
-            <!-- End Repeat -->
+            {% endfor %}
+            {% endif %}
           </ul>
         </div>
       </div>
