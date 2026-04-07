@@ -73,21 +73,10 @@ def login_action(
 
 
 @app.get('/app')
-def home_view(request: Request, db: SessionDep, user: AuthDep, album_id: int = None, track_id: int = None):
-  albums = db.exec(select(Album)).all()
-  
-  selected_album = None
-  if album_id:
-      selected_album = db.get(Album, album_id)
-  
-  selected_track = None
-  if track_id:
-      selected_track = db.get(Track, track_id)
-
+def home_view(request: Request, user: AuthDep):
   return templates.TemplateResponse(
           request=request, 
           name="index.html",
-          context={"albums": albums, "selected_album": selected_album, "selected_track": selected_track}
       )
 
 @app.get('/logout')
@@ -102,13 +91,15 @@ async def logout(request: Request):
   flash(request, 'logged out')
   return response
 
+@app.post('/albumadded', )
+
 @app.get('/view-albums', response_model=list[Album])
 def view_all_albums(db:SessionDep): 
   listalbums = db.exec(select(Album)).all()
   return listalbums
 
 @app.get('/tracks/{album_id}', response_model=list[Track], status_code=status.HTTP_200_OK)
-async def list_tracks(db:SessionDep, album_id: int):
+def list_tracks(db:SessionDep, album_id: int):
   album_tracks = db.exec(select(Track).where(Track.album_id == album_id)).all()
 
   if not album_tracks:
@@ -119,14 +110,14 @@ async def list_tracks(db:SessionDep, album_id: int):
   
   return album_tracks
 
-@app.post('/comments')
-async def make_comment(db: SessionDep, track_id: int = Form(), album_id: int = Form(), comment_text: str = Form()):
+@app.post('/comments', response_model=Comment)
+def make_comment(db: SessionDep, track_id: int = Form(), album_id: int = Form(), comment_text: str = Form()):
   new_comment = Comment(track_id=track_id, album_id=album_id, comment=comment_text)
   try:
     db.add(new_comment)
     db.commit()
-    # Redirect back to the home view with the current selection active
-    return RedirectResponse(url=f"/app?album_id={album_id}&track_id={track_id}", status_code=status.HTTP_303_SEE_OTHER)
+    db.refresh(new_comment)
+    return new_comment
   except Exception:
     raise HTTPException(
       status_code = status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -148,7 +139,7 @@ def comment_react(db:SessionDep, reaction: int, id:int, albumid:int):
   if not album:
     raise HTTPException(
       status_code = status.HTTP_404_NOT_FOUND,
-      detail = "Error, album not found"
+      detail = "Error, albumn not found"
     )
   track = db.exec(select(Track).where(Track.id == id)).first()
   if not track: 

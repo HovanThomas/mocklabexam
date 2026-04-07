@@ -14,22 +14,21 @@ def initialize():
         drop_all() 
         create_db_and_tables() 
         
-        bob = User(username='bob', email='bob@mail.com', password=encrypt_password("bobpass"))
-        db.add(bob)
+        bob = UserBase(username='bob', email='bob@mail.com', password=encrypt_password("bobpass"))
+        bob_db = User.model_validate(bob)
+
+        db.add(bob_db)
         db.commit()        
-        db.refresh(bob)
 
-        album1 = Album(album_name="Album1", user_id=bob.id, image_url="https://weblabs.web.app/api/brainrot/1.webp")
-        db.add(album1)
+        Ablum1 = Album(album_name="Album1", user_id=bob_db.id)
+        db.add(Ablum1)
         db.commit()
-        db.refresh(album1)
 
-        track1 = Track(track_name="Track1", album_id=album1.id, image_url="https://weblabs.web.app/api/brainrot/2.webp")
+        track1 = Track(track_name="Track1", album_id=Ablum1.id, album=Ablum1)
         db.add(track1)
         db.commit()
-        db.refresh(track1)
 
-        comment1 = Comment(comment="nice music, really like it", track_id=track1.id, album_id=album1.id)
+        comment1 = Comment(comment="nice music, really like it", track_id=track1.id, album_id=Ablum1.id)
         db.add(comment1)
         db.commit()
 
